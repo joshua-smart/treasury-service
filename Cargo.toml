@@ -1,8 +1,17 @@
 [package]
 name = "treasury-service"
-version = "0.1.0"
-edition = "2021"
+version = "1.0.0"
+edition = "2022"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+
+[dev-dependencies]
+cucumber = "0.13.0"
+async-trait = "0.1.56"
+tokio = { version = "1.19.2", features = ["full"] }
+
+[[test]]
+name = "main"
+harness = false
