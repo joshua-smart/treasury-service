@@ -9,9 +9,16 @@ pub use crate::data_structures::{Date, Transaction, Id};
 pub enum TreasuryServiceError {}
 
 /// Main encapsulating struct
+#[derive(Debug)]
 pub struct TreasuryService {}
 
 impl TreasuryService {
+
+    /// Create new service
+    pub fn new() -> TreasuryService {
+        TreasuryService {}
+    }
+
     /// Get a `Result<Vec<Transaction>, TreasuryServiceError>` of all transactions between 2 given dates,
     /// may return an `Err` member if query fails.
     ///
