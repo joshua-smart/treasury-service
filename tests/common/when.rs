@@ -1,7 +1,8 @@
 use cucumber::when;
 use crate::State;
+use treasury_service::TreasuryService;
 
-#[when(expr = "the addTwo method is called")]
-async fn add_two(state: &mut State) {
-    state.number += 2;
+#[when(expr = "service is started")]
+async fn service_is_started(state: &mut State) {
+    state.service = Some(TreasuryService::new());
 }

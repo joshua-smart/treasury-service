@@ -1,7 +1,7 @@
 use cucumber::then;
 use crate::State;
 
-#[then(expr = "the value in state is {int}")]
-async fn a(state: &mut State, n: isize) {
-    assert_eq!(state.number, n);
+#[then(expr = "service object exists")]
+async fn service_object_exists(state: &mut State) {
+    assert!(state.service.is_some())
 }
