@@ -1,5 +1,5 @@
-use std::fmt::Display;
 use chrono::NaiveDateTime;
+use std::fmt::Display;
 
 use super::{Id, Money};
 
@@ -14,7 +14,11 @@ pub struct Transaction {
 impl Transaction {
     /// Create a new transaction with the given id, amount and datetime
     pub fn new(id: Id, amount: Money, datetime: NaiveDateTime) -> Self {
-        Self {id, amount, datetime}
+        Self {
+            id,
+            amount,
+            datetime,
+        }
     }
 
     /// Get Id for transaction
@@ -35,7 +39,9 @@ impl Transaction {
 
 impl Display for Transaction {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "#{} {}: £{}.{:0>2}",
+        write!(
+            f,
+            "#{} {}: £{}.{:0>2}",
             self.id,
             self.datetime.format("%d-%m-%Y"),
             self.amount / 100,
@@ -54,7 +60,8 @@ mod tests {
         let t = Transaction {
             id: 0,
             amount: 105,
-            datetime: NaiveDateTime::parse_from_str("06-07-2004 00:00:00", "%d-%m-%Y %H:%M:%S").unwrap()
+            datetime: NaiveDateTime::parse_from_str("06-07-2004 00:00:00", "%d-%m-%Y %H:%M:%S")
+                .unwrap(),
         };
 
         assert_eq!(t.to_string(), "#0 06-07-2004: £1.05")

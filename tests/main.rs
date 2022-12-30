@@ -1,5 +1,4 @@
 use cucumber::WorldInit;
-use tokio;
 
 mod common;
 use common::state::State;

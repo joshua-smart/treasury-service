@@ -1,12 +1,12 @@
+use sqlx::{Connection, Error, SqliteConnection};
 use thiserror::Error;
-use sqlx::{Error, SqliteConnection, Connection};
 
-use crate::data_structures::{Transaction, Id};
+use crate::data_structures::{Id, Transaction};
 
 #[derive(Debug, Error)]
 pub enum DatabaseDriverError {
     #[error("Sqlx error: {0}")]
-    SqlxError (#[from] Error)
+    SqlxError(#[from] Error),
 }
 
 #[derive(Debug)]
@@ -16,8 +16,7 @@ pub struct DatabaseDriver {
 
 impl DatabaseDriver {
     pub async fn new(path: &str) -> Result<Self, DatabaseDriverError> {
-        let mut conn = SqliteConnection::connect(path)
-            .await?;
+        let mut conn = SqliteConnection::connect(path).await?;
 
         sqlx::query_file!("queries/database_setup.sql")
             .execute(&mut conn)
@@ -30,20 +29,29 @@ impl DatabaseDriver {
         let query: Vec<Transaction> = sqlx::query!("SELECT * FROM transactions")
             .fetch_all(&mut self.conn)
             .await?
-            .into_iter().map(|r| Transaction::new(r.id as Id, r.amount as u32, r.datetime))
+            .into_iter()
+            .map(|r| Transaction::new(r.id as Id, r.amount as u32, r.datetime))
             .collect();
 
         Ok(query)
     }
 
-    pub async fn add_transaction(&mut self, transaction: Transaction) -> Result<(), DatabaseDriverError> {
+    pub async fn add_transaction(
+        &mut self,
+        transaction: Transaction,
+    ) -> Result<(), DatabaseDriverError> {
         let id = transaction.get_id() as i64;
         let amount: u32 = transaction.get_amount();
         let datetime = transaction.get_datetime();
 
-        sqlx::query!("INSERT INTO transactions VALUES (?, ?, ?)", id, amount, datetime)
-            .execute(&mut self.conn)
-            .await?;
+        sqlx::query!(
+            "INSERT INTO transactions VALUES (?, ?, ?)",
+            id,
+            amount,
+            datetime
+        )
+        .execute(&mut self.conn)
+        .await?;
         Ok(())
     }
 
@@ -56,20 +64,30 @@ impl DatabaseDriver {
             .unwrap_or(0) as u32)
     }
 
-    pub async fn set_transaction(&mut self, transaction: Transaction) -> Result<(), DatabaseDriverError> {
+    pub async fn set_transaction(
+        &mut self,
+        transaction: Transaction,
+    ) -> Result<(), DatabaseDriverError> {
         let id = transaction.get_id() as i64;
         let amount: u32 = transaction.get_amount();
         let datetime = transaction.get_datetime();
 
-        sqlx::query!("UPDATE transactions SET amount=?, datetime=? WHERE id=?", amount, datetime, id)
-            .execute(&mut self.conn)
-            .await?;
+        sqlx::query!(
+            "UPDATE transactions SET amount=?, datetime=? WHERE id=?",
+            amount,
+            datetime,
+            id
+        )
+        .execute(&mut self.conn)
+        .await?;
 
         Ok(())
     }
 
     pub async fn remove_transaction(&mut self, id: Id) -> Result<(), DatabaseDriverError> {
-        sqlx::query!("DELETE FROM transactions WHERE id=?", id).execute(&mut self.conn).await?;
+        sqlx::query!("DELETE FROM transactions WHERE id=?", id)
+            .execute(&mut self.conn)
+            .await?;
 
         Ok(())
     }

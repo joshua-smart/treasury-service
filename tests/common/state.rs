@@ -1,11 +1,11 @@
-use cucumber::{World, WorldInit};
 use async_trait::async_trait;
-use treasury_service::TreasuryService;
+use cucumber::{World, WorldInit};
 use std::convert::Infallible;
+use treasury_service::TreasuryService;
 
 #[derive(Debug, WorldInit)]
 pub struct State {
-    pub service: Option<TreasuryService>
+    pub service: Option<TreasuryService>,
 }
 
 #[async_trait(?Send)]
