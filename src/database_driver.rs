@@ -95,6 +95,7 @@ impl DatabaseDriver {
 
 #[cfg(test)]
 mod tests {
+    #![allow(clippy::unwrap_used)]
     use chrono::NaiveDate;
 
     use super::*;

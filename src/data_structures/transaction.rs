@@ -52,6 +52,7 @@ impl Display for Transaction {
 
 #[cfg(test)]
 mod tests {
+    #![allow(clippy::unwrap_used)]
     use super::*;
     use chrono::NaiveDateTime;
 
