@@ -1,7 +1,7 @@
-mod date;
-mod transaction;
 mod id;
+mod money;
+mod transaction;
 
-pub use date::Date;
-pub use transaction::Transaction;
 pub use id::Id;
+pub use money::Money;
+pub use transaction::Transaction;

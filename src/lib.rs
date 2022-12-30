@@ -1,52 +1,26 @@
 #![deny(missing_docs)]
+#![warn(rustdoc::missing_crate_level_docs)]
 #![deny(rustdoc::private_doc_tests)]
+#![deny(clippy::unwrap_used)]
+#![deny(clippy::expect_used)]
 //! Rust-based financial management service
+//!
+//! Stores a database of transactions
+//!
+//! ```
+//! use treasury_service::TreasuryService;
+//!
+//! #[tokio::main]
+//! async fn main() {
+//!     let mut service = TreasuryService::new(":memory:")
+//!         .await
+//!         .unwrap();
+//! }
+//! ```
 
+/// treasury-service data structures
 mod data_structures;
-pub use crate::data_structures::{Date, Transaction, Id};
+mod database_driver;
+mod treasury_service;
 
-/// Enum defining error types for TreasuryService
-pub enum TreasuryServiceError {}
-
-/// Main encapsulating struct
-#[derive(Debug)]
-pub struct TreasuryService {}
-
-impl TreasuryService {
-
-    /// Create new service
-    pub fn new() -> TreasuryService {
-        TreasuryService {}
-    }
-
-    /// Get a `Result<Vec<Transaction>, TreasuryServiceError>` of all transactions between 2 given dates,
-    /// may return an `Err` member if query fails.
-    ///
-    /// Query may fail if:
-    /// - `from` date occurs after `to` date
-    pub fn get_transactions(&self, _from: Date, _to: Date) -> Result<Vec<Transaction>, TreasuryServiceError> {
-        todo!();
-    }
-
-    /// Add a transaction to the system, may return `Err` memeber if operation fails.
-    pub fn add_transaction(&mut self, _transaction: Transaction) -> Result<(), TreasuryServiceError> {
-        todo!();
-    }
-    
-    /// Overwrite data of a transaction with a specified `transaction_id`, may return `Err` member
-    /// if operation fails.
-    ///
-    /// Operation may fail if:
-    /// - Therre is no transaction with the given `transaction_id`
-    pub fn set_transaction(&mut self, _transaction_id: Id, _transaction: Transaction) -> Result<(), TreasuryServiceError> {
-        todo!();
-    }
-
-    /// Remove a transaction from the system with a given `transaction_id`, may return `Err` member if operation fails.
-    ///
-    /// Operation may fail if:
-    /// - There is no transaction with the given `transaction_id`
-    pub fn remove_transaction(&mut self, _transaction_id: Id) -> Result<(), TreasuryServiceError> {
-        todo!();
-    }
-}
+pub use crate::treasury_service::{TreasuryService, TreasuryServiceError};
