@@ -1,0 +1,91 @@
+{
+  "db": "SQLite",
+  "32facf3bf257dfe2a701826f480e26a72f380e7c7e446d7b6b5f9e0a3c8fdb70": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int64"
+        },
+        {
+          "name": "amount",
+          "ordinal": 1,
+          "type_info": "Int64"
+        },
+        {
+          "name": "datetime",
+          "ordinal": 2,
+          "type_info": "Datetime"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Right": 0
+      }
+    },
+    "query": "SELECT * FROM transactions"
+  },
+  "4c669916d6345f906659324bd577a42fc87d4679cef223ac126a68bad5fe2cf2": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Right": 3
+      }
+    },
+    "query": "UPDATE transactions SET amount=?, datetime=? WHERE id=?"
+  },
+  "a13ea147c26d831a512e59e9da5c4c725007dd9acdf7b4bd8265bf2a812b105b": {
+    "describe": {
+      "columns": [
+        {
+          "name": "maxid",
+          "ordinal": 0,
+          "type_info": "Int64"
+        }
+      ],
+      "nullable": [
+        true
+      ],
+      "parameters": {
+        "Right": 0
+      }
+    },
+    "query": "SELECT MAX(id) as maxid FROM transactions"
+  },
+  "b43004a4421651c40e4af0e172c95c21dc86d26e1441a60d99a60478c680edd2": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Right": 1
+      }
+    },
+    "query": "DELETE FROM transactions WHERE id=?"
+  },
+  "d57361ab44eaa97998ec70ee8a1c5c33cb16db46b0750f47bed5ae7cb65f8315": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Right": 3
+      }
+    },
+    "query": "INSERT INTO transactions VALUES (?, ?, ?)"
+  },
+  "e51dba61320e05c9baa07983a0a233f33c65285222fa7d51ee2c4cd3a7a67263": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Right": 0
+      }
+    },
+    "query": "CREATE TABLE IF NOT EXISTS transactions (\n    id int NOT NULL UNIQUE,\n    amount int NOT NULL,\n    datetime DATETIME NOT NULL\n);"
+  }
+}
