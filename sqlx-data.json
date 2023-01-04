@@ -1,5 +1,15 @@
 {
   "db": "SQLite",
+  "1c3f731c1677f436d8dc9e72bfd0409309485d2cc7ab10997c8fba479c157e0e": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Right": 3
+      }
+    },
+    "query": "UPDATE transactions SET amount=?, date=? WHERE id=?"
+  },
   "32facf3bf257dfe2a701826f480e26a72f380e7c7e446d7b6b5f9e0a3c8fdb70": {
     "describe": {
       "columns": [
@@ -14,7 +24,7 @@
           "type_info": "Int64"
         },
         {
-          "name": "datetime",
+          "name": "date",
           "ordinal": 2,
           "type_info": "Datetime"
         }
@@ -29,16 +39,6 @@
       }
     },
     "query": "SELECT * FROM transactions"
-  },
-  "4c669916d6345f906659324bd577a42fc87d4679cef223ac126a68bad5fe2cf2": {
-    "describe": {
-      "columns": [],
-      "nullable": [],
-      "parameters": {
-        "Right": 3
-      }
-    },
-    "query": "UPDATE transactions SET amount=?, datetime=? WHERE id=?"
   },
   "a13ea147c26d831a512e59e9da5c4c725007dd9acdf7b4bd8265bf2a812b105b": {
     "describe": {
@@ -78,7 +78,7 @@
     },
     "query": "INSERT INTO transactions VALUES (?, ?, ?)"
   },
-  "e51dba61320e05c9baa07983a0a233f33c65285222fa7d51ee2c4cd3a7a67263": {
+  "e6212fb4114b5dc943048a44a1ee4c7c002bf659e785f2afd6a76691fd52dbb8": {
     "describe": {
       "columns": [],
       "nullable": [],
@@ -86,6 +86,6 @@
         "Right": 0
       }
     },
-    "query": "CREATE TABLE IF NOT EXISTS transactions (\n    id int NOT NULL UNIQUE,\n    amount int NOT NULL,\n    datetime DATETIME NOT NULL\n);"
+    "query": "CREATE TABLE IF NOT EXISTS transactions (\n    id int NOT NULL UNIQUE,\n    amount int NOT NULL,\n    date DATETIME NOT NULL\n);"
   }
 }
