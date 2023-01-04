@@ -37,10 +37,5 @@ jobs:
     - uses: actions/checkout@v3
     - name: Test
       run: cargo test
-    - name: Publish report
-      uses: mikepenz/action-junit-report@v3
-      if: always()
-      with:
-        report_paths: 'junit.xml'
 
 
