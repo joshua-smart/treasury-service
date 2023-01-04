@@ -1,5 +1,4 @@
 use crate::State;
-use chrono::NaiveDate;
 use cucumber::when;
 use treasury_service::TreasuryService;
 
@@ -8,57 +7,29 @@ async fn service_is_started(state: &mut State) {
     state.service = Some(TreasuryService::new(":memory:").await.unwrap());
 }
 
-#[when(
-    expr = "a transaction with amount {int}, and datetime {int}-{int}-{int} {int}:{int}:{int} is added"
-)]
-async fn when_a_transaction_is_added(
-    state: &mut State,
-    amount: u32,
-    day: u32,
-    month: u32,
-    year: i32,
-    hour: u32,
-    minute: u32,
-    second: u32,
-) {
-    let datetime = NaiveDate::from_ymd_opt(year, month, day)
-        .unwrap()
-        .and_hms_opt(hour, minute, second)
-        .unwrap();
-
+#[when(expr = "a transaction with amount {int}, and date {string} is added")]
+async fn when_a_transaction_is_added(state: &mut State, amount: u32, date_string: String) {
     state
         .service
         .as_mut()
         .unwrap()
-        .add_transaction(amount, datetime)
+        .add_transaction(amount, &date_string)
         .await
         .unwrap();
 }
 
-#[when(
-    expr = "a transaction is updated with values id {int}, amount {int} and datetime {int}-{int}-{int} {int}:{int}:{int}"
-)]
+#[when(expr = "a transaction is updated with values id {int}, amount {int} and date {string}")]
 async fn a_transaction_is_updated_with_values_id_amount_and_datetime(
     state: &mut State,
     id: u32,
     amount: u32,
-    day: u32,
-    month: u32,
-    year: i32,
-    hour: u32,
-    minute: u32,
-    second: u32,
+    date_string: String,
 ) {
-    let datetime = NaiveDate::from_ymd_opt(year, month, day)
-        .unwrap()
-        .and_hms_opt(hour, minute, second)
-        .unwrap();
-
     state
         .service
         .as_mut()
         .unwrap()
-        .set_transaction(id, amount, datetime)
+        .set_transaction(id, amount, &date_string)
         .await
         .unwrap();
 }

@@ -19,7 +19,7 @@
 //! ```
 
 /// treasury-service data structures
-mod data_structures;
+pub mod data_structures;
 mod database_driver;
 mod treasury_service;
 

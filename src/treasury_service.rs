@@ -1,8 +1,7 @@
 use crate::{
-    data_structures::{Id, Money, Transaction},
+    data_structures::{Date, DateError, Id, Money, Transaction},
     database_driver::{DatabaseDriver, DatabaseDriverError},
 };
-use chrono::NaiveDateTime;
 use thiserror::Error;
 
 /// Enum defining error types for TreasuryService
@@ -11,6 +10,9 @@ pub enum TreasuryServiceError {
     #[error("Database error: {0}")]
     /// Variant for errors occuring in the underlying database
     DatabaseError(#[from] DatabaseDriverError),
+    #[error("Date error: {0}")]
+    /// Variant for errors occuring in the date struct
+    DateError(#[from] DateError),
 }
 
 /// Main encapsulating struct
@@ -35,10 +37,11 @@ impl TreasuryService {
     pub async fn add_transaction(
         &mut self,
         amount: Money,
-        datetime: NaiveDateTime,
+        date: &str,
     ) -> Result<(), TreasuryServiceError> {
         let id = self.database_driver.get_next_id().await?;
-        let new_transaction = Transaction::new(id, amount, datetime);
+        let date = date.parse::<Date>()?;
+        let new_transaction = Transaction::new(id, amount, date);
 
         Ok(self
             .database_driver
@@ -55,9 +58,10 @@ impl TreasuryService {
         &mut self,
         id: Id,
         amount: Money,
-        datetime: NaiveDateTime,
+        date: &str,
     ) -> Result<(), TreasuryServiceError> {
-        let updated_transaction = Transaction::new(id, amount, datetime);
+        let date = date.parse::<Date>()?;
+        let updated_transaction = Transaction::new(id, amount, date);
 
         Ok(self
             .database_driver

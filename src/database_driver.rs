@@ -1,12 +1,14 @@
 use sqlx::{Connection, Error, SqliteConnection};
 use thiserror::Error;
 
-use crate::data_structures::{Id, Transaction};
+use crate::data_structures::{DateError, Id, Transaction};
 
 #[derive(Debug, Error)]
 pub enum DatabaseDriverError {
     #[error("Sqlx error: {0}")]
     SqlxError(#[from] Error),
+    #[error("Date error: {0}")]
+    DateError(#[from] DateError),
 }
 
 #[derive(Debug)]
@@ -30,7 +32,7 @@ impl DatabaseDriver {
             .fetch_all(&mut self.conn)
             .await?
             .into_iter()
-            .map(|r| Transaction::new(r.id as Id, r.amount as u32, r.datetime))
+            .map(|r| Transaction::new(r.id as Id, r.amount as u32, r.date.into()))
             .collect();
 
         Ok(query)
@@ -41,14 +43,14 @@ impl DatabaseDriver {
         transaction: Transaction,
     ) -> Result<(), DatabaseDriverError> {
         let id = transaction.get_id() as i64;
-        let amount: u32 = transaction.get_amount();
-        let datetime = transaction.get_datetime();
+        let amount = transaction.get_amount();
+        let date: chrono::NaiveDateTime = transaction.get_date().try_into()?;
 
         sqlx::query!(
             "INSERT INTO transactions VALUES (?, ?, ?)",
             id,
             amount,
-            datetime
+            date
         )
         .execute(&mut self.conn)
         .await?;
@@ -70,12 +72,12 @@ impl DatabaseDriver {
     ) -> Result<(), DatabaseDriverError> {
         let id = transaction.get_id() as i64;
         let amount: u32 = transaction.get_amount();
-        let datetime = transaction.get_datetime();
+        let date: chrono::NaiveDateTime = transaction.get_date().try_into()?;
 
         sqlx::query!(
-            "UPDATE transactions SET amount=?, datetime=? WHERE id=?",
+            "UPDATE transactions SET amount=?, date=? WHERE id=?",
             amount,
-            datetime,
+            date,
             id
         )
         .execute(&mut self.conn)
@@ -94,9 +96,9 @@ impl DatabaseDriver {
 }
 
 #[cfg(test)]
-mod tests {
+mod test {
     #![allow(clippy::unwrap_used)]
-    use chrono::NaiveDate;
+    use crate::data_structures::Date;
 
     use super::*;
 
@@ -105,11 +107,7 @@ mod tests {
     }
 
     fn create_dummy_transaction(id: u32) -> Transaction {
-        let datetime = NaiveDate::from_ymd_opt(2004, 7, 6)
-            .unwrap()
-            .and_hms_opt(1, 36, 47)
-            .unwrap();
-        Transaction::new(id, 105, datetime)
+        Transaction::new(id, 105, Date::new(1, 1, 2023))
     }
 
     #[tokio::test]
