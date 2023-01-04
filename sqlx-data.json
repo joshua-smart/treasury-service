@@ -78,7 +78,7 @@
     },
     "query": "INSERT INTO transactions VALUES (?, ?, ?)"
   },
-  "e6212fb4114b5dc943048a44a1ee4c7c002bf659e785f2afd6a76691fd52dbb8": {
+  "dbfddf909a38b6e7a1d8b05125cb25c889e7593a677abc7e5a1a0ead62e70ef8": {
     "describe": {
       "columns": [],
       "nullable": [],
@@ -86,6 +86,6 @@
         "Right": 0
       }
     },
-    "query": "CREATE TABLE IF NOT EXISTS transactions (\n    id int NOT NULL UNIQUE,\n    amount int NOT NULL,\n    date DATETIME NOT NULL\n);"
+    "query": "CREATE TABLE IF NOT EXISTS transactions (\n    id int NOT NULL UNIQUE,\n    amount int8 NOT NULL,\n    date DATETIME NOT NULL\n);"
   }
 }
