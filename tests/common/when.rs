@@ -8,7 +8,7 @@ async fn service_is_started(state: &mut State) {
 }
 
 #[when(expr = "a transaction with amount {int}, and date {string} is added")]
-async fn when_a_transaction_is_added(state: &mut State, amount: u32, date_string: String) {
+async fn when_a_transaction_is_added(state: &mut State, amount: u64, date_string: String) {
     state
         .service
         .as_mut()
@@ -22,7 +22,7 @@ async fn when_a_transaction_is_added(state: &mut State, amount: u32, date_string
 async fn a_transaction_is_updated_with_values_id_amount_and_datetime(
     state: &mut State,
     id: u32,
-    amount: u32,
+    amount: u64,
     date_string: String,
 ) {
     state

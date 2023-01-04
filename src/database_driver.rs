@@ -32,7 +32,7 @@ impl DatabaseDriver {
             .fetch_all(&mut self.conn)
             .await?
             .into_iter()
-            .map(|r| Transaction::new(r.id as Id, r.amount as u32, r.date.into()))
+            .map(|r| Transaction::new(r.id as Id, r.amount as u64, r.date.into()))
             .collect();
 
         Ok(query)
@@ -43,7 +43,7 @@ impl DatabaseDriver {
         transaction: Transaction,
     ) -> Result<(), DatabaseDriverError> {
         let id = transaction.get_id() as i64;
-        let amount = transaction.get_amount();
+        let amount = transaction.get_amount() as i64;
         let date: chrono::NaiveDateTime = transaction.get_date().try_into()?;
 
         sqlx::query!(
@@ -71,7 +71,7 @@ impl DatabaseDriver {
         transaction: Transaction,
     ) -> Result<(), DatabaseDriverError> {
         let id = transaction.get_id() as i64;
-        let amount: u32 = transaction.get_amount();
+        let amount = transaction.get_amount() as i64;
         let date: chrono::NaiveDateTime = transaction.get_date().try_into()?;
 
         sqlx::query!(
@@ -126,9 +126,27 @@ mod test {
 
     #[tokio::test]
     async fn get_transactions() {
-        let mut database = DatabaseDriver::new(":memory:").await.unwrap();
+        let mut database = create_in_memory_database().await;
 
         let transactions_1 = database.get_transactions().await.unwrap();
         assert_eq!(transactions_1, vec![]);
+    }
+
+    #[tokio::test]
+    async fn set_transaction() {
+        let mut database = create_in_memory_database().await;
+
+        let transaction = create_dummy_transaction(1);
+        database.add_transaction(transaction.clone()).await.unwrap();
+        database.set_transaction(transaction).await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn remove_transaction() {
+        let mut database = create_in_memory_database().await;
+
+        let transaction = create_dummy_transaction(0);
+        database.add_transaction(transaction).await.unwrap();
+        database.remove_transaction(0).await.unwrap();
     }
 }

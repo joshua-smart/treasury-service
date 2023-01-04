@@ -1,4 +1,5 @@
 #![deny(missing_docs)]
+#![deny(unsafe_code)]
 #![warn(rustdoc::missing_crate_level_docs)]
 #![deny(rustdoc::private_doc_tests)]
 #![deny(clippy::unwrap_used)]

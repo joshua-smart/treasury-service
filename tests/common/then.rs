@@ -10,7 +10,7 @@ async fn service_object_exists(state: &mut State) {
 async fn a_transaction_with_id_amount_and_datetime_exists(
     state: &mut State,
     id: u32,
-    amount: u32,
+    amount: u64,
     date_string: String,
 ) {
     let transactions = state

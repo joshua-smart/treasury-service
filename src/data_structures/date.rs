@@ -1,4 +1,4 @@
-use std::{fmt::Display, num::ParseIntError, str::FromStr};
+use std::{cmp::Ordering, fmt::Display, num::ParseIntError, str::FromStr};
 
 use chrono::{Datelike, NaiveDate, NaiveDateTime};
 use lazy_static::lazy_static;
@@ -27,13 +27,28 @@ pub enum DateError {
 pub struct Date {
     day: u8,
     month: u8,
-    year: i32,
+    year: u64,
 }
 
 impl Date {
     /// Create new Date object from a day, month, and year
-    pub fn new(day: u8, month: u8, year: i32) -> Self {
+    pub fn new(day: u8, month: u8, year: u64) -> Self {
         Date { day, month, year }
+    }
+
+    /// Get the day from this date
+    pub fn day(&self) -> u8 {
+        self.day
+    }
+
+    /// Get the month from this date
+    pub fn month(&self) -> u8 {
+        self.month
+    }
+
+    /// Get the year from this date
+    pub fn year(&self) -> u64 {
+        self.year
     }
 }
 
@@ -47,7 +62,7 @@ impl TryFrom<&Date> for NaiveDateTime {
     type Error = DateError;
 
     fn try_from(date: &Date) -> Result<Self, Self::Error> {
-        NaiveDate::from_ymd_opt(date.year, date.month as u32, date.day as u32)
+        NaiveDate::from_ymd_opt(date.year as i32, date.month as u32, date.day as u32)
             .ok_or(DateError::ValueOutOfBounds)?
             .and_hms_opt(0, 0, 0)
             .ok_or(DateError::ValueOutOfBounds)
@@ -62,7 +77,7 @@ impl From<NaiveDateTime> for Date {
         let month: u8 = date.month().try_into().unwrap();
         let year = date.year();
 
-        Date::new(day, month, year)
+        Date::new(day, month, year as u64)
     }
 }
 
@@ -75,7 +90,7 @@ impl From<Date> for String {
 lazy_static! {
     static ref DATE_PATTERN: Regex = {
         #[allow(clippy::unwrap_used)]
-        Regex::new(r"(\d{2})-(\d{2})-(\d{4})").unwrap()
+        Regex::new(r"^(\d{2})-(\d{2})-(\d+)$").unwrap()
     };
 }
 
@@ -99,7 +114,7 @@ impl FromStr for Date {
             .get(3)
             .ok_or(DateError::InvalidFormat)?
             .as_str()
-            .parse::<i32>()?;
+            .parse::<u64>()?;
 
         Ok(Date::new(day, month, year))
     }
@@ -113,22 +128,61 @@ impl TryFrom<String> for Date {
     }
 }
 
+impl PartialOrd for Date {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Date {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        match self.year.cmp(&other.year) {
+            Ordering::Equal => match self.month.cmp(&other.month) {
+                Ordering::Equal => self.day.cmp(&other.day),
+                o => o,
+            },
+            o => o,
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     #![allow(clippy::unwrap_used)]
     use super::*;
+    use proptest::prelude::*;
+
+    proptest!(
+        #[test]
+        fn from_str(d in 1u8..32, m in 1u8..13, y: u64) {
+            let date_string = format!("{:0>2}-{:0>2}-{}", d, m, y);
+            println!("{}", date_string);
+            let date = date_string.parse::<Date>().unwrap();
+
+            assert_eq!(date.day(), d);
+            assert_eq!(date.month(), m);
+            assert_eq!(date.year(), y);
+        }
+
+        #[test]
+        fn to_string(d in 1u8..32, m in 1u8..13, y: u64) {
+            let date = Date::new(d, m, y);
+
+            assert_eq!(date.to_string(), format!("{:0>2}-{:0>2}-{}", d, m, y));
+        }
+    );
 
     #[test]
-    fn to_string() {
-        let date = Date::new(6, 7, 2004);
+    fn ord() {
+        let a = Date::new(1, 3, 2022);
+        let b = Date::new(2, 3, 2022);
+        let c = Date::new(2, 3, 2022);
+        let d = Date::new(1, 4, 2022);
 
-        assert_eq!(date.to_string(), "06-07-2004");
-    }
+        assert_eq!(a.cmp(&b), Ordering::Less);
+        assert_eq!(b.cmp(&a), Ordering::Greater);
+        assert_eq!(b.cmp(&c), Ordering::Equal);
 
-    #[test]
-    fn from_str() {
-        let date = "01-03-2024".parse::<Date>().unwrap();
-
-        assert!(date == Date::new(1, 3, 2024))
+        assert_eq!(b.cmp(&d), Ordering::Less);
     }
 }
